@@ -5,7 +5,7 @@
 // Environment configuration
 namespace FMF {
     namespace impl {
-        class EnviornmentConfiguration: public Configuration {
+        class EnvironmentConfiguration: public Configuration {
             virtual std::string do_get(std::string const &key) {
                 return getenv(key.c_str());
             }
@@ -27,7 +27,7 @@ namespace FMF {
         private:
             virtual std::unique_ptr<Configuration> do_create(std::string const &name) {
                 if (name == "env") {
-                    return std::make_unique<EnviornmentConfiguration>();
+                    return std::make_unique<EnvironmentConfiguration>();
                 }
                 return std::unique_ptr<Configuration>();
             }
