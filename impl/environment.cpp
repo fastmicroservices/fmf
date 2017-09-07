@@ -7,7 +7,8 @@ namespace FMF {
     namespace impl {
         class EnvironmentConfiguration: public Configuration {
             virtual std::string do_get(std::string const &key) {
-                return getenv(key.c_str());
+                auto val = getenv(key.c_str());
+                return val ? val : std::string();
             }
         };
 

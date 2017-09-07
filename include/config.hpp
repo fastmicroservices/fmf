@@ -1,7 +1,8 @@
 #include <string>
 #include <list>
 #include <memory>
-\
+#include <iostream>
+
 namespace FMF {
     class Configuration {
     public:
@@ -10,9 +11,13 @@ namespace FMF {
         std::string get(std::string const &key) {
             return do_get(key);
         }
+        void set(std::string const &key, std::string const &value) {
+            return do_set(key,value);
+        }
 
     private:
         virtual std::string do_get(std::string const &key) = 0;
+        virtual void do_set(std::string const &key, std::string const &value) {};
     };
 
     class ConfigurationFactory {
@@ -28,6 +33,7 @@ namespace FMF {
         }
     protected:
         static void add(std::unique_ptr<ConfigurationFactory> &&factory) {
+            std::cout << "adding factory" << std::endl;
             auto &factories = get_factories();
             factories.push_back(std::move(factory));
         }
