@@ -1,5 +1,10 @@
 CXXFLAGS = -std=c++14 -Iinclude -Wall
 
+all: example1
+
+clean:
+	rm *.o example1
+
 example1: example1.o environment.o
 	clang++ example1.o environment.o -o example1
 
