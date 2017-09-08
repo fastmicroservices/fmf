@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include "../include/config.hpp"
+#include "../include/endpoint.hpp"
 
 // Inmem configuration
 namespace FMF {
@@ -30,7 +31,6 @@ namespace FMF {
                     InmemConfigurationFactory::enable();
                 }
             };
-            static EnableInmemConfigurationFactory _enable;
         private:
             virtual std::unique_ptr<Configuration> do_create(std::string const &name) {
                 if (name == "inmem") {
@@ -40,6 +40,44 @@ namespace FMF {
             }
         };
 
-        InmemConfigurationFactory::EnableInmemConfigurationFactory InmemConfigurationFactory::_enable;
+        
+        class InmemEndpoint : public BindingEndpoint {
+        public:
+        private:
+            virtual std::string do_handle_topic(std::string const &topic, int version_major, int version_minor, std::function<std::string(std::string const &)> handler) {
+                // create the slug
+                auto slug = topic + "," + std::to_string(version_major) + "." + std::to_string(version_minor);
+                _handlers[slug] = handler;
+                return slug;
+            }
+            virtual std::function<std::string(std::string const &)> do_bind(std::string const &registration) {
+                return _handlers[registration];
+            }
+            std::map<std::string,std::function<std::string(std::string const &)>> _handlers;
+        };
+        
+        class InmemEndpointFactory : public BindingEndpointFactory {
+        public:
+            static void enable() {
+                auto endp = std::make_unique<InmemEndpointFactory>();
+                BindingEndpointFactory::add(std::move(endp));
+            }
+            class EnableInmemEndpointFactory {
+            public:
+                EnableInmemEndpointFactory() {
+                    InmemEndpointFactory::enable();
+                }
+            };
+        private:
+            virtual std::unique_ptr<BindingEndpoint> do_create(std::string const &name) {
+                if (name == "inmem") {
+                    return std::make_unique<InmemEndpoint>();
+                }
+                return std::unique_ptr<BindingEndpoint>();
+            }
+        };
+        
+        static InmemConfigurationFactory::EnableInmemConfigurationFactory enable_config;
+        static InmemEndpointFactory::EnableInmemEndpointFactory enable_endpoint;
     }
 }
