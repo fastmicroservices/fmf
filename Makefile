@@ -1,12 +1,13 @@
 CXXFLAGS = -std=c++14 -Iinclude -Wall
+CFLAGS = -std=c11 -Iinclude -Wall
 
 all: example1
 
 clean:
 	rm *.o example1
 
-example1: example1.o environment.o inmem.o multiple.o
-	clang++ example1.o environment.o inmem.o multiple.o -o example1
+example1: example1.o environment.o inmem.o multiple.o mongoose.o http.o
+	clang++ example1.o environment.o inmem.o multiple.o http.o mongoose.o -o example1
 
 example1.o: example1.cpp include/config.hpp
 	clang++ -c example1.cpp $(CXXFLAGS)
@@ -19,3 +20,9 @@ inmem.o: impl/inmem.cpp include/config.hpp
 
 multiple.o: impl/multiple.cpp include/config.hpp
 	clang++ -c impl/multiple.cpp $(CXXFLAGS)
+
+http.o: impl/http.cpp include/config.hpp include/endpoint.hpp include/mongoose.h
+	clang++ -c impl/http.cpp $(CXXFLAGS)
+
+mongoose.o: mongoose/mongoose.c
+	clang -c mongoose/mongoose.c $(CFLAGS)

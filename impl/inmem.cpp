@@ -43,6 +43,8 @@ namespace FMF {
         
         class InmemEndpoint : public BindingEndpoint {
         public:
+            InmemEndpoint(std::unique_ptr<Configuration> &config): BindingEndpoint(config) {}
+            static const char constexpr *_construction_id  { "inmem" };
         private:
             virtual std::string do_handle_topic(std::string const &topic, int version_major, int version_minor, std::function<std::string(std::string const &)> handler) {
                 // create the slug
@@ -55,29 +57,15 @@ namespace FMF {
             }
             std::map<std::string,std::function<std::string(std::string const &)>> _handlers;
         };
-        
-        class InmemEndpointFactory : public BindingEndpointFactory {
+
+        class EnableInmemEndpointFactory {
         public:
-            static void enable() {
-                auto endp = std::make_unique<InmemEndpointFactory>();
-                BindingEndpointFactory::add(std::move(endp));
-            }
-            class EnableInmemEndpointFactory {
-            public:
-                EnableInmemEndpointFactory() {
-                    InmemEndpointFactory::enable();
-                }
-            };
-        private:
-            virtual std::unique_ptr<BindingEndpoint> do_create(std::string const &name) {
-                if (name == "inmem") {
-                    return std::make_unique<InmemEndpoint>();
-                }
-                return std::unique_ptr<BindingEndpoint>();
+            EnableInmemEndpointFactory() {
+                TEndpointFactory<InmemEndpoint>::enable();
             }
         };
         
         static InmemConfigurationFactory::EnableInmemConfigurationFactory enable_config;
-        static InmemEndpointFactory::EnableInmemEndpointFactory enable_endpoint;
+        static EnableInmemEndpointFactory enable_endpoint;
     }
 }

@@ -17,13 +17,23 @@ int main() {
     std::cout << "The value of TEST1 on multiconf is " << multiconf->get("TEST1") << std::endl << std::flush;
     
     std::cout << "SAMPLING ENDPOINTS" << std::endl;
-    auto endp = FMF::BindingEndpointFactory::create("inmem");
+    auto endp = FMF::BindingEndpointFactory::create("inmem", multiconf);
     std::cout << "We have endp: " << static_cast<bool>(endp) << std::endl;
-    auto slug = endp->handle_topic("test", 1, 0, [](std::string const &src) {
+    auto testFn = [](std::string const &src) {
         std::cout << "TEST has been called with " << src << std::endl;
         return "PONG";
-    });
+    };
+    auto slug = endp->handle_topic("test", 1, 0, testFn);
     std::cout << "Registered as: " << slug << std::endl;
     auto bound = endp->bind(slug);
     std::cout << "Now calling TEST" << std::endl << bound("test payload") << std::endl;
+
+    multiconf->set("PORT", "8080");
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+    auto http = FMF::BindingEndpointFactory::create("http", multiconf);
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+    auto registration = http->handle_topic("test", 1, 0, testFn);
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+    while (http->listen()) { ; }
+    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
 }
