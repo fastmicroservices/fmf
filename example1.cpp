@@ -1,8 +1,25 @@
 #include <iostream>
+#include <string>
+#include <list>
+#include <algorithm>
 #include "include/config.hpp"
 #include "include/endpoint.hpp"
 
-int main() {
+class options {
+    std::list<std::string> _options;
+public:
+    options(int argc, char **argv) {
+        while (argc--) {
+            _options.push_front(argv[argc]);
+        }
+    }
+    bool is_present(std::string const &key) const {
+        return std::any_of(_options.cbegin(), _options.cend(), [key](std::string const &src) { return src == key; });
+    }
+};
+
+int main(int argc, char **argv) {
+    options opts(argc,argv);
     std::cout << "SAMPLING CONFIGURATION" << std::endl;
     auto envconf = FMF::ConfigurationFactory::create("env");
     std::cout << "The value of PATH on envconf is " << envconf->get("PATH") << std::endl << std::flush;
@@ -28,12 +45,23 @@ int main() {
     auto bound = endp->bind(slug);
     std::cout << "Now calling TEST" << std::endl << bound("test payload") << std::endl;
 
-    multiconf->set("PORT", "8080");
-    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
-    auto http = FMF::BindingEndpointFactory::create("http", multiconf);
-    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
-    auto registration = http->handle_topic("test", 1, 0, testFn);
-    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
-    while (http->listen()) { ; }
-    std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+    if (opts.is_present("client")) {
+        std::cout << "Binding to http://localhost:8080/test" << std::endl;
+        auto http = FMF::BindingEndpointFactory::create("http", multiconf);
+        auto fn = http->bind("http://localhost:8080/test");
+        std::cout << "Calling now" << std::endl;
+        auto result = fn("PING");
+        std::cout << "The result is: " << result << std::endl;
+    }
+    else {
+        multiconf->set("PORT", "8080");
+        std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+        auto http = FMF::BindingEndpointFactory::create("http", multiconf);
+        std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+        auto registration = http->handle_topic("test", 1, 0, testFn);
+        std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+        while (http->listen()) { ; }
+        std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+    }
+    return 0;
 }

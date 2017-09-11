@@ -89,7 +89,7 @@ namespace FMF {
 
             static void client_ev_handler(struct mg_connection *nc, int ev, void *p)
             {
-                static_cast<HttpEndpoint*>(nc->mgr->user_data)->handler(nc, ev, p);
+                static_cast<HttpEndpoint*>(nc->mgr->user_data)->client_handler(nc, ev, p);
             }
 
             bool _done_polling;
@@ -100,7 +100,7 @@ namespace FMF {
                 if (ev == MG_EV_HTTP_REPLY) {
                     auto hm = static_cast<struct http_message *>(ev_data);
                     nc->flags |= MG_F_CLOSE_IMMEDIATELY;
-                    _polling_result += std::string(hm->message.p, hm->message.len);
+                    _polling_result += std::string(hm->body.p, hm->body.len);
                     _done_polling = true;
                   } 
                 else if (ev == MG_EV_CLOSE) {
