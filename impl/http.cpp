@@ -10,7 +10,9 @@ namespace FMF {
     namespace impl {
         class HttpEndpoint: public BindingEndpoint {
         public:
-            HttpEndpoint(std::unique_ptr<Configuration> &config): BindingEndpoint(config) { }
+            HttpEndpoint(std::unique_ptr<Configuration> &config): BindingEndpoint(config) {
+                _http_port = _config->get("PORT", "80");
+            }
             virtual ~HttpEndpoint() 
             {
                 if (_started) close();
@@ -31,7 +33,7 @@ namespace FMF {
                 std::function<std::string(std::string const &)> handler) 
             {
                 _handlers[topic] = handler;
-                return std::string("http://") + _config->get("HOSTNAME") + "/" + topic;
+                return std::string("http://") + _config->get("HOSTNAME", "localhost") + ":" + _http_port + "/" + topic;
             }
             virtual std::function<std::string(std::string const &)> do_bind(std::string const &url) 
             {
@@ -93,7 +95,8 @@ namespace FMF {
             }
 
             bool _done_polling;
-            std::string _polling_result; 
+            std::string _polling_result;
+            std::string _http_port;
 
             void client_handler(struct mg_connection *nc, int ev, void *ev_data) 
             {
@@ -112,9 +115,7 @@ namespace FMF {
             {
                 struct mg_connection *nc;
                 mg_mgr_init(&_mgr, this);
-                auto http_port = _config->get("PORT");
-                if (http_port.empty()) http_port = "80";
-                nc = mg_bind(&_mgr, http_port.c_str(), &ev_handler);
+                nc = mg_bind(&_mgr, _http_port.c_str(), &ev_handler);
                 if (nc == NULL)
                 {
                     throw "Failed to create listener";

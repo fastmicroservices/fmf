@@ -6,8 +6,8 @@ all: example1
 clean:
 	rm *.o example1
 
-example1: example1.o environment.o inmem.o multiple.o mongoose.o http.o
-	clang++ example1.o environment.o inmem.o multiple.o http.o mongoose.o -o example1
+example1: example1.o environment.o inmem.o multiple.o mongoose.o http.o eureka.o
+	clang++ example1.o environment.o inmem.o multiple.o http.o mongoose.o eureka.o -o example1
 
 example1.o: example1.cpp include/config.hpp
 	clang++ -c example1.cpp $(CXXFLAGS)
@@ -26,3 +26,6 @@ http.o: impl/http.cpp include/config.hpp include/endpoint.hpp include/mongoose.h
 
 mongoose.o: mongoose/mongoose.c
 	clang -c mongoose/mongoose.c $(CFLAGS)
+
+eureka.o: impl/eureka.cpp include/discovery.hpp
+	clang++ -c impl/eureka.cpp $(CXXFLAGS)

@@ -9,8 +9,9 @@ namespace FMF {
     public:
         virtual ~Configuration() = default;
 
-        std::string get(std::string const &key) {
-            return do_get(key);
+        std::string get(std::string const &key, std::string const &default_value = std::string()) {
+            auto value = do_get(key);
+            return value.empty() ? default_value : value;
         }
         void set(std::string const &key, std::string const &value) {
             return do_set(key,value);

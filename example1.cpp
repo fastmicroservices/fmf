@@ -4,6 +4,7 @@
 #include <algorithm>
 #include "include/config.hpp"
 #include "include/endpoint.hpp"
+#include "include/discovery.hpp"
 
 class options {
     std::list<std::string> _options;
@@ -59,9 +60,18 @@ int main(int argc, char **argv) {
         auto http = FMF::BindingEndpointFactory::create("http", multiconf);
         std::cout << __FILE__ << ":" << __LINE__ << std::endl;
         auto registration = http->handle_topic("test", 1, 0, testFn);
+
+        multiconf->set("EUREKA_HOST", "localhost");
+        multiconf->set("EUREKA_PORT", "32768");
+        auto discovery_svc = FMF::DiscoveryFactory::create("eureka", multiconf);
+        auto discovery_registration = discovery_svc->publish("test", 1, 0, registration, std::string());
+        std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+        std::cout << "Discovery_registration value " << discovery_registration << std::endl;
         std::cout << __FILE__ << ":" << __LINE__ << std::endl;
         while (http->listen()) { ; }
         std::cout << __FILE__ << ":" << __LINE__ << std::endl;
     }
+
+
     return 0;
 }
