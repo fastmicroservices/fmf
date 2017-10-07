@@ -4,6 +4,7 @@
 #include <list>
 #include <memory>
 #include "config.hpp"
+#include "context.hpp"
 
 namespace FMF {
     class Endpoint {
@@ -23,13 +24,13 @@ namespace FMF {
     public:
         BindingEndpoint(std::unique_ptr<Configuration> &config): Endpoint(config) {}
         virtual ~BindingEndpoint() = default;
-        std::string handle_topic(std::string const &topic, int version_major, int version_minor, std::function<std::string(std::string const &)> handler) {
+        std::string handle_topic(std::string const &topic, int version_major, int version_minor, std::function<std::string(std::string const &, Context &)> handler) {
             return do_handle_topic(topic, version_major, version_minor, handler);
         }
         virtual bool listen() { return false; }
         virtual void close() {};
     private:
-        virtual std::string do_handle_topic(std::string const &topic, int version_major, int version_minor, std::function<std::string(std::string const &)> handler) = 0;
+        virtual std::string do_handle_topic(std::string const &topic, int version_major, int version_minor, std::function<std::string(std::string const &, Context &)> handler) = 0;
     };
 
     class BindingEndpointFactory {

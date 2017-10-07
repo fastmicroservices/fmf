@@ -5,6 +5,7 @@
 extern "C" {
 #include "../include/mongoose.h"
 }
+#include <context.hpp>
 
 namespace FMF {
     namespace impl {
@@ -30,7 +31,7 @@ namespace FMF {
             static constexpr const char *_construction_id { "http" };
         private:
             virtual std::string do_handle_topic(std::string const &topic, int version_major, int version_minor, 
-                std::function<std::string(std::string const &)> handler) 
+                std::function<std::string(std::string const &, Context &)> handler) 
             {
                 _handlers[topic] = handler;
                 return std::string("http://") + _config->get("HOSTNAME", "localhost") + ":" + _http_port + "/" + topic;
@@ -53,7 +54,7 @@ namespace FMF {
                 };
             }
 
-            std::map<std::string,std::function<std::string(std::string const &)>> _handlers;
+            std::map<std::string,std::function<std::string(std::string const &, Context &)>> _handlers;
             struct mg_serve_http_opts _http_server_opts = {};
             bool _started {false};
             struct mg_mgr _mgr;
@@ -78,12 +79,24 @@ namespace FMF {
                             mg_http_send_error(nc, 404, NULL);
                         }
                         else {
-                            auto result = pos->second(std::string(httpm->body.p, httpm->body.len));
-                            mg_printf(nc,
-                                "HTTP/1.1 200 OK\r\n"
-                                "Content-Type: text/plain\r\n"
-                                "Content-Length: %d\r\n\r\n%s",
-                                (int)result.size(), result.c_str());
+                            Context ctx;
+                            ctx.set("LocalPath", local_path);
+                            ctx.set("QueryString", query_text);
+                            ctx.set("Uri", std::string(httpm->uri.p, httpm->uri.len));
+                            auto result = pos->second(std::string(httpm->body.p, httpm->body.len), ctx);
+                            auto serve_file = ctx.get("Serve-File");
+                            auto mime_type = ctx.get("Content-Type", "text/plain");
+                            if (serve_file.empty()) {
+                                std::string headers_fmt = std::string("HTTP/1.1 200 OK\r\n"
+                                "Content-Type: ") + mime_type + "\r\n"
+                                "Content-Length: %d\r\n\r\n%s";
+                                mg_printf(nc,
+                                    headers_fmt.c_str(),
+                                    (int)result.size(), result.c_str());
+                            }
+                            else {
+                                mg_http_serve_file(nc, httpm, serve_file.c_str(), mg_mk_str(mime_type.c_str()), mg_mk_str(""));
+                            }
                         }
                     }
                 }

@@ -1,7 +1,10 @@
 CXXFLAGS = -std=c++14 -Iinclude -Wall
 CFLAGS = -std=c11 -Iinclude -Wall
 
-all: example1
+all: example1 dashboard/dashboard
+
+dashboard/dashboard: dashboard/dashboard.cpp
+	pushd dashboard && make && popd
 
 clean:
 	rm *.o example1
