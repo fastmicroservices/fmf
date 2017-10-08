@@ -1,0 +1,3 @@
+[submodule "external/zstr"]
+	path = external/zstr
+	url = https://github.com/mateidavid/zstr
