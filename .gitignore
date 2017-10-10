@@ -1,3 +1,5 @@
 *.o
 example1
 dashboard/dashboard
+lib/libfmf.so
+graph/graph

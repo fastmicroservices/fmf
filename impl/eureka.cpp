@@ -5,6 +5,7 @@ extern "C" {
 }
 #include <regex>
 #include <iostream>
+#include "parsehttp.hpp"
 
 namespace FMF {
     namespace impl {
@@ -42,28 +43,29 @@ namespace FMF {
                     std::string body;
                 } result;
                 mg_mgr_init(&mgr, &result);
-                auto slug = topic + "-" + std::to_string(version_major) + "." + std::to_string(version_minor);
                 auto url = std::string("http://") + 
                     _config->get("EUREKA_HOST", "localhost") + ":" + _config->get("EUREKA_PORT", "32768") + 
-                    "/eureka/v2/apps/" + slug;
+                    "/eureka/v2/apps/" + topic;
                 auto payload = std::string("{\
-                    \"instance\": {\
-                        \"hostName\": \"") + host + "\",\
-                        \"app\": \"" + topic + "\",\
-                        \"vipAddress\": \"com.automationrhapsody.eureka.app\",\
-                        \"secureVipAddress\": \"com.automationrhapsody.eureka.app\",\
-                        \"ipAddr\": \"10.0.0.10\",\
-                        \"status\": \"STARTING\",\
-                        \"port\": {\"$\": \"" + port + "\", \"@enabled\": \"true\"},\
-                        \"securePort\": {\"$\": \"8443\", \"@enabled\": \"true\"},\
-                        \"healthCheckUrl\": \"http://WKS-SOF-L011:8080/healthcheck\",\
-                        \"statusPageUrl\": \"\",\
-                        \"homePageUrl\": \"\",\
-                        \"dataCenterInfo\": {\
+                    \"instance\": {")
+                        + "\"hostName\": \"" + host + "\""
+                        ", \"instanceId\": \"" + uri + "\""
+                        ", \"app\": \"" + topic + "\""
+                        ", \"vipAddress\": \"mainpool.app\""
+                        // "\"secureVipAddress\": \"com.automationrhapsody.eureka.app\","
+                        ", \"ipAddr\": \"10.0.0.10\""
+                        ", \"status\": \"UP\""
+                        ", \"port\": {\"$\": \"" + port + "\", \"@enabled\": \"true\"}"
+                        // "\"securePort\": {\"$\": \"8443\", \"@enabled\": \"true\"},"
+                        // "\"healthCheckUrl\": \"http://WKS-SOF-L011:8080/healthcheck\","
+                        // "\"statusPageUrl\": \"\","
+                        ", \"homePageUrl\": \"" + uri + "\""
+                        ", \"dataCenterInfo\": {\
                             \"@class\": \"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo\", \
                             \"name\": \"MyOwn\"\
-                        }\
-                    }\
+                        }\n"
+                        ", \"metadata\": { \"version\": " + std::to_string(version_major) + "." + std::to_string(version_minor) + " }"
+                    "}\
                 }";
                 
                 std::cout << "====================================" << std::endl;
@@ -87,10 +89,50 @@ namespace FMF {
                 }
                 mg_mgr_free(&mgr);
 
+                HttpResult hr(result.body);
+                std::cout << "Result code: " << hr._response_code << std::endl;
+
                 return result.body;
             }
             virtual std::string do_find(std::string const &topic, int version_major, int version_minor)
             {
+                // get all apps
+                if (topic == "*") {
+                    struct mg_mgr mgr;
+                    struct Result {
+                        bool done_polling = false;
+                        std::string body;
+                    } result;
+                    mg_mgr_init(&mgr, &result);
+                    auto url = std::string("http://") + 
+                        _config->get("EUREKA_HOST", "localhost") + ":" + _config->get("EUREKA_PORT", "32768") + 
+                        "/eureka/v2/apps";
+                    
+                    mg_connect_http(&mgr, [](struct mg_connection *nc, int ev, void *ev_data) {
+                            auto resultp = static_cast<Result*>(nc->mgr->user_data);
+                            if (ev == MG_EV_HTTP_REPLY) {
+                                auto hm = static_cast<struct http_message *>(ev_data);
+                                nc->flags |= MG_F_CLOSE_IMMEDIATELY;
+                                resultp->body += std::string(hm->message.p, hm->message.len);
+                                resultp->done_polling = true;
+                            }
+                            else if (ev == MG_EV_CLOSE) {
+                                resultp->done_polling = true;
+                            }
+                        }, 
+                        url.c_str(), 
+                        "Accept-Encoding: gzip\r\n"
+                        "Accept: application/json\r\n", NULL);
+                    while (!result.done_polling) {
+                        mg_mgr_poll(&mgr, 1000);
+                    }
+                    mg_mgr_free(&mgr);
+                    HttpResult hr(result.body);
+                    if (hr._response_code >= 400) {
+                        return hr._response_description;
+                    }
+                    return hr._contents;
+                }
                 // find over netflix
                 return "";
             }

@@ -7,9 +7,9 @@ int main()
 {
     std::cout << "Starting the DASHBOARD" << std::endl;
     auto multiconf = FMF::ConfigurationFactory::create("env,inmem");
-    multiconf->set("EUREKA_HOST", "localhost");
-    multiconf->set("EUREKA_PORT", "32768");
-    multiconf->set("DISCOVERY_CLASS", "eureka");
+    multiconf->set_if_not_present("EUREKA_HOST", "localhost");
+    multiconf->set_if_not_present("EUREKA_PORT", "32768");
+    multiconf->set_if_not_present("DISCOVERY_CLASS", "eureka");
     multiconf->set("PORT", "8080");
     auto discovery_svc = FMF::DiscoveryFactory::create(multiconf->get("DISCOVERY_CLASS"), multiconf);
 
@@ -19,11 +19,9 @@ int main()
         return std::string();
     };
 
-    auto test_discovery = [](std::string const &src, FMF::Context &ctx) {
+    auto test_discovery = [&discovery_svc](std::string const &src, FMF::Context &ctx) {
         ctx.set("Content-Type", "application/json");
-        auto is_running = false;
-        std::string result("{ \"discovery_running\": " + std::to_string(is_running) + " }");
-        return result;
+        return discovery_svc->find("*",0,0);
     };
 
     auto http = FMF::BindingEndpointFactory::create("http", multiconf);

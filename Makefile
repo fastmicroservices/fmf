@@ -1,16 +1,24 @@
-CXXFLAGS = -std=c++14 -Iinclude -Wall
+CXXFLAGS = -std=c++14 -Iinclude -Iexternal/zstr/src -Wall
 CFLAGS = -std=c11 -Iinclude -Wall
 
-all: example1 dashboard/dashboard
+all: example1 dashboard/dashboard graph/graph
 
 dashboard/dashboard: dashboard/dashboard.cpp
 	pushd dashboard && make && popd
 
-clean:
-	rm *.o example1
+graph/graph: graph/graph.cpp
+	pushd graph && make && popd
 
-example1: example1.o environment.o inmem.o multiple.o mongoose.o http.o eureka.o
-	clang++ example1.o environment.o inmem.o multiple.o http.o mongoose.o eureka.o -o example1
+clean:
+	rm *.o example1 lib/libfmf.so
+	pushd dashboard && make clean && popd
+	pushd graph && make clean && popd
+
+example1: example1.o lib/libfmf.so
+	clang++ example1.o -L./lib -lfmf -o example1
+
+lib/libfmf.so: environment.o inmem.o multiple.o mongoose.o http.o eureka.o registeringendpoint.o
+	clang++ -fPIC -shared environment.o inmem.o multiple.o http.o mongoose.o eureka.o registeringendpoint.o -lz -o lib/libfmf.so
 
 example1.o: example1.cpp include/config.hpp
 	clang++ -c example1.cpp $(CXXFLAGS)
@@ -32,3 +40,6 @@ mongoose.o: mongoose/mongoose.c
 
 eureka.o: impl/eureka.cpp include/discovery.hpp
 	clang++ -c impl/eureka.cpp $(CXXFLAGS)
+
+registeringendpoint.o: impl/registeringendpoint.cpp
+	clang++ -c impl/registeringendpoint.cpp $(CXXFLAGS)

@@ -13,8 +13,22 @@ namespace FMF {
             auto value = do_get(key);
             return value.empty() ? default_value : value;
         }
+        std::string get(std::string const &key, std::function<std::string(void)> fn_default_getter) {
+            auto ret = get(key);
+            return ret.empty() ? fn_default_getter() : ret;
+        }
         void set(std::string const &key, std::string const &value) {
             return do_set(key,value);
+        }
+        void set_if_not_present(std::string const &key, std::function<std::string(void)> fn_getter) {
+            if (get(key).empty()) {
+                set(key, fn_getter());
+            }
+        }
+        void set_if_not_present(std::string const &key, std::string const & new_value) {
+            if (get(key).empty()) {
+                set(key, new_value);
+            }
         }
 
     private:
