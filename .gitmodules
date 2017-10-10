@@ -1,3 +1,6 @@
 [submodule "external/zstr"]
 	path = external/zstr
 	url = https://github.com/mateidavid/zstr
+[submodule "external/plustache"]
+	path = external/plustache
+	url = https://github.com/mrtazz/plustache
