@@ -4,3 +4,6 @@
 [submodule "external/plustache"]
 	path = external/plustache
 	url = https://github.com/mrtazz/plustache
+[submodule "external/rapidjson"]
+	path = external/rapidjson
+	url = https://github.com/Tencent/rapidjson/
