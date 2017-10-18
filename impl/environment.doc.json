@@ -1,0 +1,34 @@
+{
+    "name": "EnvironmentConfiguration",
+    "type": "implementation",
+    "problem-description": "Software deployed to different environment need to access basic configuration items. An easy way to provide them is by means of environment variables configured at host creation.",
+    "implements": "Configuration",
+    "provides": "Configuration over process environment variables",
+    "scenarios": [[
+        {
+            "actor": "MonitorService",
+            "action": "deploys",
+            "object": "Host"
+        },
+        {
+            "actor": "MonitorService",
+            "action": "sets configuration values (by scripts, docker call, etc) on",
+            "object": "Environment"
+        },
+        {
+            "actor": "Host",
+            "action": "runs",
+            "object": "Service"
+        },
+        {
+            "actor": "Service",
+            "action": "retrieves configuration values from",
+            "object": "EnvironmentConfiguration"
+        },
+        {
+            "actor": "EnvironmentConfiguration",
+            "action": "retrieves configuration values from",
+            "object": "Environment"
+        }]
+    ]
+}

@@ -1,0 +1,51 @@
+{
+    "name": "EurekaDiscovery",
+    "type": "implementation",
+    "problem-description": "Software deployed to different environment need to access basic configuration items. An easy way to provide them is by means of environment variables configured at host creation.",
+    "implements": "Discovery",
+    "provides": "Discovery over Netflix Eureka",
+    "scenarios": [[
+        {
+            "actor": "Service",
+            "action": "Publishes itself",
+            "object": "EurekaDiscovery"
+        },
+        {
+            "actor": "EurekaDiscovery",
+            "action": "Writes to the Eureka REST API",
+            "object": "Eureka"
+        },
+        {
+            "actor": "Eureka",
+            "action": "Maintains service registry",
+            "object": "Eureka"
+        }],
+        [
+            {
+                "actor": "ServiceClient",
+                "action": "Queries for Service",
+                "object": "EurekaDiscovery"
+            },
+            {
+                "actor": "EurekaDiscovery",
+                "action": "Writes to the Eureka REST API",
+                "object": "Eureka"
+            },
+            {
+                "actor": "Eureka",
+                "action": "Replies with service registration",
+                "object": "EurekaDiscovery"
+            },
+            {
+                "actor":"EurekaDiscovery",
+                "action":"Returs the reply",
+                "object":"ServiceClient"
+            },
+            {
+                "actor":"ServiceClient",
+                "action":"Connects to",
+                "object": "Service"
+            }
+        ]
+    ]
+}

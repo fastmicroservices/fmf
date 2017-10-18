@@ -9,7 +9,11 @@
                 "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
                 "/usr/include",
                 "${workspaceRoot}",
-                "${workspaceRoot}/external/sztr/src"
+                "${workspaceRoot}/external/sztr/src",
+                "${workspaceRoot}/external/plustache",
+                "${workspaceRoot}/external/rapidjson",
+                "${workspaceRoot}/include",
+                "${workspaceRoot}/external/rapidjson/include"
             ],
             "defines": [],
             "intelliSenseMode": "clang-x64",

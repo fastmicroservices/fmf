@@ -25,7 +25,16 @@ namespace FMF {
         BindingEndpoint(std::unique_ptr<Configuration> &config): Endpoint(config) {}
         virtual ~BindingEndpoint() = default;
         std::string handle_topic(std::string const &topic, int version_major, int version_minor, std::function<std::string(std::string const &, Context &)> handler) {
-            return do_handle_topic(topic, version_major, version_minor, handler);
+            auto safe_handler = [handler](std::string const &payload, Context &ctx){
+                try {
+                    return handler(payload, ctx);
+                }
+                catch(...) {
+                    ctx.set("Result-Code", "500");
+                    return std::string("Error occurred.");
+                }
+            };
+            return do_handle_topic(topic, version_major, version_minor, safe_handler);
         }
         virtual bool listen() { return false; }
         virtual void close() {};

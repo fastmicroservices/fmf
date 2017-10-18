@@ -1,0 +1,13 @@
+<text x="{{label_left}}" y="{{label_top}}" font-family="Verdana" font-size="18" id="action_{{number}}_label" style="opacity:0">
+    {{description}}
+<animate attributeName="opacity" attributeType="XML" 
+        from="0" to="1" begin="{{start}}" dur="{{span}}" />
+</text>
+<line x1="{{from_x}}" y1="{{from_y}}" x2="{{to_x}}" y2="{{to_y}}" style="stroke:rgb(255,0,0);stroke-width:5;opacity:0">
+<animate attributeName="opacity" attributeType="XML" 
+        from="0" to="1" begin="{{start}}" dur="{{span}}" />
+</line>
+<animate attributeName="fill" attributeType="XML" href="#{{from_actor}}_box"
+        from="white" to="red" begin="{{start}}" dur="{{span}}" />
+<animate attributeName="fill" attributeType="XML" href="#{{to_actor}}_box"
+        from="white" to="red" begin="{{start_offset}}" dur="{{span}}" />

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="960" height="180">
+        <rect x="20" width="200" y="65" height="50" style="stroke-width:3;stroke:rgb(0,0,0);fill:rgb(254,254,254)" id="MonitorService_box" >
+</rect>
+<text x="23" y="110" font-family="Verdana" font-size="14">
+    MonitorService
+</text>
+<rect x="260" width="200" y="65" height="50" style="stroke-width:3;stroke:rgb(0,0,0);fill:rgb(254,254,254)" id="Host_box" >
+</rect>
+<text x="263" y="110" font-family="Verdana" font-size="14">
+    Host
+</text>
+<rect x="260" width="200" y="125" height="50" style="stroke-width:3;stroke:rgb(0,0,0);fill:rgb(254,254,254)" id="Environment_box" >
+</rect>
+<text x="263" y="170" font-family="Verdana" font-size="14">
+    Environment
+</text>
+<rect x="500" width="200" y="65" height="50" style="stroke-width:3;stroke:rgb(0,0,0);fill:rgb(254,254,254)" id="Service_box" >
+</rect>
+<text x="503" y="110" font-family="Verdana" font-size="14">
+    Service
+</text>
+<rect x="740" width="200" y="65" height="50" style="stroke-width:3;stroke:rgb(0,0,0);fill:rgb(254,254,254)" id="EnvironmentConfiguration_box" >
+</rect>
+<text x="743" y="110" font-family="Verdana" font-size="14">
+    EnvironmentConfiguration
+</text>
+<text x="3" y="180" font-family="Verdana" font-size="18" id="action_0_label" style="opacity:0">
+    MonitorService deploys Host
+<animate attributeName="opacity" attributeType="XML" 
+        from="0" to="1" begin="1s" dur="5s" />
+</text>
+<line x1="220" y1="90" x2="260" y2="90" style="stroke:rgb(255,0,0);stroke-width:5;opacity:0">
+<animate attributeName="opacity" attributeType="XML" 
+        from="0" to="1" begin="1s" dur="5s" />
+</line>
+<animate attributeName="fill" attributeType="XML" href="#MonitorService_box"
+        from="white" to="red" begin="1s" dur="5s" />
+<animate attributeName="fill" attributeType="XML" href="#Host_box"
+        from="white" to="red" begin="2s" dur="5s" />
+<text x="3" y="180" font-family="Verdana" font-size="18" id="action_1_label" style="opacity:0">
+    MonitorService sets configuration values (by scripts, docker call, etc) on Environment
+<animate attributeName="opacity" attributeType="XML" 
+        from="0" to="1" begin="8s" dur="5s" />
+</text>
+<line x1="220" y1="90" x2="260" y2="150" style="stroke:rgb(255,0,0);stroke-width:5;opacity:0">
+<animate attributeName="opacity" attributeType="XML" 
+        from="0" to="1" begin="8s" dur="5s" />
+</line>
+<animate attributeName="fill" attributeType="XML" href="#MonitorService_box"
+        from="white" to="red" begin="8s" dur="5s" />
+<animate attributeName="fill" attributeType="XML" href="#Environment_box"
+        from="white" to="red" begin="9s" dur="5s" />
+<text x="3" y="180" font-family="Verdana" font-size="18" id="action_2_label" style="opacity:0">
+    Host runs Service
+<animate attributeName="opacity" attributeType="XML" 
+        from="0" to="1" begin="15s" dur="5s" />
+</text>
+<line x1="460" y1="90" x2="500" y2="90" style="stroke:rgb(255,0,0);stroke-width:5;opacity:0">
+<animate attributeName="opacity" attributeType="XML" 
+        from="0" to="1" begin="15s" dur="5s" />
+</line>
+<animate attributeName="fill" attributeType="XML" href="#Host_box"
+        from="white" to="red" begin="15s" dur="5s" />
+<animate attributeName="fill" attributeType="XML" href="#Service_box"
+        from="white" to="red" begin="16s" dur="5s" />
+<text x="3" y="180" font-family="Verdana" font-size="18" id="action_3_label" style="opacity:0">
+    Service retrieves configuration values from EnvironmentConfiguration
+<animate attributeName="opacity" attributeType="XML" 
+        from="0" to="1" begin="22s" dur="5s" />
+</text>
+<line x1="700" y1="90" x2="740" y2="90" style="stroke:rgb(255,0,0);stroke-width:5;opacity:0">
+<animate attributeName="opacity" attributeType="XML" 
+        from="0" to="1" begin="22s" dur="5s" />
+</line>
+<animate attributeName="fill" attributeType="XML" href="#Service_box"
+        from="white" to="red" begin="22s" dur="5s" />
+<animate attributeName="fill" attributeType="XML" href="#EnvironmentConfiguration_box"
+        from="white" to="red" begin="23s" dur="5s" />
+<text x="3" y="180" font-family="Verdana" font-size="18" id="action_4_label" style="opacity:0">
+    EnvironmentConfiguration retrieves configuration values from Environment
+<animate attributeName="opacity" attributeType="XML" 
+        from="0" to="1" begin="29s" dur="5s" />
+</text>
+<line x1="740" y1="90" x2="460" y2="150" style="stroke:rgb(255,0,0);stroke-width:5;opacity:0">
+<animate attributeName="opacity" attributeType="XML" 
+        from="0" to="1" begin="29s" dur="5s" />
+</line>
+<animate attributeName="fill" attributeType="XML" href="#EnvironmentConfiguration_box"
+        from="white" to="red" begin="29s" dur="5s" />
+<animate attributeName="fill" attributeType="XML" href="#Environment_box"
+        from="white" to="red" begin="30s" dur="5s" />
+
+</svg>

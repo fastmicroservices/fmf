@@ -2,7 +2,7 @@
 #include <string>
 #include <list>
 #include <memory>
-#include <iostream>
+#include <functional>
 
 namespace FMF {
     class Configuration {
@@ -49,7 +49,6 @@ namespace FMF {
         }
     protected:
         static void add(std::unique_ptr<ConfigurationFactory> &&factory) {
-            std::cout << "adding factory" << std::endl;
             auto &factories = get_factories();
             factories.push_back(std::move(factory));
         }
