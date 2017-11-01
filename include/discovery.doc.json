@@ -1,0 +1,35 @@
+{
+    "name": "Discovery",
+    "type": "abstraction",
+    "problem-description": "Service clients need to find out endpoints available, so they can call service implementations. Conversely, services run by hosts need to publish their availability.",
+    "provides": "Discovery",
+    "scenarios": [[
+        {
+            "actor": "Service",
+            "action": "publishes itself on",
+            "object": "Discovery"
+        },
+        {
+            "actor": "Discovery",
+            "action": "maintains service registry on",
+            "object": "Discovery"
+        }],
+        [
+            {
+                "actor": "ServiceClient",
+                "action": "queries for Service through",
+                "object": "Discovery"
+            },
+            {
+                "actor": "Discovery",
+                "action": "Replies with service registration",
+                "object": "ServiceClient"
+            },
+            {
+                "actor":"ServiceClient",
+                "action":"Connects to",
+                "object": "Service"
+            }
+        ]
+    ]
+}

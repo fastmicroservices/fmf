@@ -1,0 +1,65 @@
+{
+    "name": "Endpoint",
+    "type": "abstraction",
+    "problem-description": "A service is created. It wants to be accessed but it doesn't want to deal with the details of a particular protocol. The Service will use an Endpoint to handle such need. Converesely, when a client finds an address for a Service (through Discovery) it wants to connect to it without the need to deal with the particulars of the protocol. It uses an Endpoint to connect.",
+    "provides": "Endpoint",
+    "scenarios": [[
+        {
+            "actor": "Service",
+            "action": "publishes a method to be accessed on",
+            "object": "Endpoint"
+        },
+        {
+            "actor": "Endpoint",
+            "action": "handles the details of",
+            "object": "ConcreteProtocol"
+        },
+        {
+            "actor": "ConcreteProtocol",
+            "action": "starts accepting connections on",
+            "object": "ConcreteProtocol"
+        },
+        {
+            "actor": "ConcreteProtocol",
+            "action": "provides an identifier valid to create a connection to",
+            "object": "Endpoint"
+        },
+        {
+            "actor": "Endpoint",
+            "action": "relies the new identifier to",
+            "object": "Service"
+        }],
+        [
+            {
+                "actor": "ServiceClient",
+                "action": "creates a connection to an existing identifier through",
+                "object": "Endpoint"
+            },
+            {
+                "actor": "Endpoint",
+                "action": "sets up a connection through",
+                "object": "ConcreteProtocol"
+            },
+            {
+                "actor":"ConcreteProtocol",
+                "action":"sends payload to",
+                "object": "Service"
+            },
+            {
+                "actor":"Service",
+                "action":"executes, then sends reply to",
+                "object": "ConcreteProtocol"
+            },
+            {
+                "actor":"ConcreteProtocol",
+                "action":"relies the reply to",
+                "object": "Endpoint"
+            },
+            {
+                "actor":"Endpoint",
+                "action":"relies the reply to",
+                "object": "ServiceClient"
+            }
+        ]
+    ]
+}

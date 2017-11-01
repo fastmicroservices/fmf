@@ -135,7 +135,7 @@ std::string process_graph(std::string const &payload) {
         max_level = actor_to_render->_level > max_level ? actor_to_render->_level : max_level;
         max_order = actor_to_render->_order > max_order ? actor_to_render->_order : max_order;
     }
-    auto label_top = (Actor::TOTAL_HEIGHT * (max_order + 1));
+    auto label_top = (Actor::TOTAL_HEIGHT * (max_order + 1) + Actor::TOTAL_HEIGHT / 2);
     PlustacheTypes::ObjectType action {
         {"span", "5s"},
         {"label_left", std::to_string(Actor::LABEL_MARGIN)},
@@ -165,7 +165,7 @@ std::string process_graph(std::string const &payload) {
     }
     mdata.add("contents", contents);
     mdata.add("canvas_width", std::to_string(Actor::TOTAL_WIDTH * ++max_level));
-    mdata.add("canvas_height", std::to_string(Actor::TOTAL_HEIGHT * ++max_order));
+    mdata.add("canvas_height", std::to_string(Actor::TOTAL_HEIGHT * (max_order+2)));
     return templ.render(svg_idiom, mdata);
 }
 

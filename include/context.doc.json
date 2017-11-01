@@ -1,0 +1,33 @@
+{
+    "name": "Context",
+    "type": "abstraction",
+    "problem-description": "Services run in the context of data/requests that need to be identified in order to pinpoint issues or follow up on concerns.",
+    "provides": "Context",
+    "scenarios": [[
+        {
+            "actor": "ExternalUser",
+            "action": "sends a request to",
+            "object": "Façade"
+        },
+        {
+            "actor": "Façade",
+            "action": "creates a new context identification and stores it on",
+            "object": "Context"
+        },
+        {
+            "actor": "Façade",
+            "action": "calls services",
+            "object": "Service"
+        },
+        {
+            "actor": "Service",
+            "action": "adds information related to its execution into",
+            "object": "Context"
+        },
+        {
+            "actor": "Service",
+            "action": "retrieves information stored by services into",
+            "object": "Context"
+        }]
+    ]
+}

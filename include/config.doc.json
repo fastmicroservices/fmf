@@ -1,0 +1,23 @@
+{
+    "name": "Configuration",
+    "type": "abstraction",
+    "problem-description": "Software deployed to different environment need to access basic configuration items.",
+    "provides": "Configuration",
+    "scenarios": [[
+        {
+            "actor": "Service",
+            "action": "retrieves configuration values from",
+            "object": "Configuration"
+        },
+        {
+            "actor": "Service",
+            "action": "uses the information furnished by Configuration to access",
+            "object": "Database"
+        },
+        {
+            "actor": "Service",
+            "action": "uses the information furnished by Configuration to access",
+            "object": "ExternalServices"
+        }]
+    ]
+}
