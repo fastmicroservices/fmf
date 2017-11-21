@@ -24,7 +24,9 @@
         "memory": "cpp",
         "tuple": "cpp",
         "utility": "cpp",
-        "bitset": "cpp"
+        "bitset": "cpp",
+        "array": "cpp",
+        "thread": "cpp"
     },
     "files.exclude": {
         "**/.git": true,

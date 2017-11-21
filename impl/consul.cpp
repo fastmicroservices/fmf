@@ -1,49 +1,35 @@
-#ifdef MACOS
-#ifndef _MACH_PORT_T
-#define _MACH_PORT_T
-#include <sys/_types.h> /* __darwin_mach_port_t */
-typedef __darwin_mach_port_t mach_port_t;
-#include <pthread.h>
-mach_port_t pthread_mach_thread_np(pthread_t);
-#endif /* _MACH_PORT_T */
-#endif /* MACOS */
-
 #include "../include/discovery.hpp"
 #include "../include/config.hpp"
 extern "C" {
 #include "../include/mongoose.h"    
 }
-#include <regex>
-#include <iostream>
-#include "parsehttp.hpp"
-
 
 namespace FMF {
     namespace impl {
-        class EurekaDiscovery: public Discovery {
+        class ConsulDiscovery: public Discovery {
         public:
-            EurekaDiscovery(std::unique_ptr<Configuration> &config) : Discovery(config) 
+            ConsulDiscovery(std::unique_ptr<Configuration> &config) : Discovery(config) 
             {
             }
-            static constexpr char const *_construction_id = "eureka";
+            static constexpr char const *_construction_id = "consul";
         private:
             virtual std::string do_publish(std::string const &topic, int version_major, int version_minor, std::string const &uri, std::string const &test) 
             {
-                // parse the URI
-                std::regex rx_parse_uri("https?://([^:/]+)(:(\\d+))?(/.*)");
-                std::smatch rx_result;
-                if (!std::regex_search(uri, rx_result, rx_parse_uri)) {
-                    std::cerr << "The URI " << uri << " is not supported" << std::endl;
-                    throw "Unsupported URI";
-                }
+                // // parse the URI
+                // std::regex rx_parse_uri("https?://([^:/]+)(:(\\d+))?(/.*)");
+                // std::smatch rx_result;
+                // if (!std::regex_search(uri, rx_result, rx_parse_uri)) {
+                //     std::cerr << "The URI " << uri << " is not supported" << std::endl;
+                //     throw "Unsupported URI";
+                // }
 
-                auto host = rx_result[1].str();
-                auto port = rx_result[3].str();
-                if (port.empty()) {
-                    port = "80";
-                }
-                auto resource = rx_result[3].str();
-                // register over netflix eureka
+                // auto host = rx_result[1].str();
+                // auto port = rx_result[3].str();
+                // if (port.empty()) {
+                //     port = "80";
+                // }
+                // auto resource = rx_result[3].str();
+                // register over hashicorp consul
 
                 // POST /eureka/v2/apps/appID
                 // Input: JSON/XML payload HTTP Code: 204 on success

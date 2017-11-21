@@ -1,5 +1,5 @@
-CXXFLAGS = -std=c++14 -Iinclude -Iexternal/zstr/src -Wall
-CFLAGS = -std=c11 -Iinclude -Wall
+CXXFLAGS = -std=c++14 -Iinclude -Iexternal/zstr/src -Wall -fPIC
+CFLAGS = -std=c11 -Iinclude -Wall -fPIC
 
 all: example1 dashboard/dashboard graph/graph
 
