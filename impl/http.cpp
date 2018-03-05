@@ -1,6 +1,7 @@
 #include <string>
 #include <functional>
 #include <map>
+#include <regex>
 #include "../include/endpoint.hpp"
 extern "C" {
 #include "../include/mongoose.h"
@@ -12,7 +13,17 @@ namespace FMF {
         class HttpEndpoint: public BindingEndpoint {
         public:
             HttpEndpoint(std::unique_ptr<Configuration> &config): BindingEndpoint(config) {
+#ifdef  MG_ENABLE_SSL
+                auto is_ssl = _config->get("IS_SSL", "no");
+                _is_ssl = is_ssl == "no";
+                _http_port = _config->get("PORT", _is_ssl ? "443" : "80");
+                if (_is_ssl) {
+                    _ssl_cert = _config->get("SSL_CERT", "server.pem");
+                    _ssl_key = _config->get("SSL_KEY", "server.key");
+                }
+#else // ifdef  MG_ENABLE_SSL
                 _http_port = _config->get("PORT", "80");
+#endif //def  MG_ENABLE_SSL
             }
             virtual ~HttpEndpoint() 
             {
@@ -76,9 +87,15 @@ namespace FMF {
                         auto topic = local_path.substr(1);
                         auto pos = _handlers.find(topic);
                         if (pos == _handlers.end()) {
-                            mg_http_send_error(nc, 404, NULL);
+                            // second try: match using regex
+                            pos = std::find_if(_handlers.begin(), _handlers.end(), [topic](auto const &tuple){
+                                return std::regex_match(topic, std::regex(tuple.first));
+                            });
+                            if (pos == _handlers.end()) {
+                                mg_http_send_error(nc, 404, NULL);
+                            }
                         }
-                        else {
+                        if (pos != _handlers.end()) {
                             Context ctx;
                             ctx.set("LocalPath", local_path);
                             ctx.set("QueryString", query_text);
@@ -110,6 +127,11 @@ namespace FMF {
             bool _done_polling;
             std::string _polling_result;
             std::string _http_port;
+#ifdef  MG_ENABLE_SSL
+            std::string _ssl_cert;
+            std::string _ssl_key;
+            bool _is_ssl;
+#endif //def  MG_ENABLE_SSL
 
             void client_handler(struct mg_connection *nc, int ev, void *ev_data) 
             {
@@ -133,7 +155,6 @@ namespace FMF {
                 {
                     throw "Failed to create listener";
                 }
-
                 // Set up HTTP server parameters
                 mg_set_protocol_http_websocket(nc);
                 _http_server_opts.document_root = "www";

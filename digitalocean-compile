@@ -9,7 +9,7 @@ make clean
 tar cfz ../src.tar.gz .
 
 # step 2: setup an environment for building
-ssh $SSH_OPTS root@$DROPLET_IP "apt-get update && apt-get install build-essential zlib1g-dev llvm clang-3.8 -y && ln -s /usr/bin/clang-3.8 /usr/bin/clang && ln -s /usr/bin/clang++-3.8 /usr/bin/clang++"
+ssh $SSH_OPTS root@$DROPLET_IP "apt-get update && apt-get install build-essential zlib1g-dev llvm clang-3.8 openssl -y && ln -s /usr/bin/clang-3.8 /usr/bin/clang && ln -s /usr/bin/clang++-3.8 /usr/bin/clang++"
 scp $SSH_OPTS ../src.tar.gz root@$DROPLET_IP:/root/src.tar.gz
 ssh $SSH_OPTS root@$DROPLET_IP "cd /root && mkdir src && cd src && mv ../src.tar.gz . && tar xfz src.tar.gz && make"
 scp $SSH_OPTS root@$DROPLET_IP:/root/src/lib/libfmf.so lib/debian_x64_libfmf.so
