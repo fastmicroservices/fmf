@@ -47,15 +47,18 @@ namespace FMF {
                 _handlers[topic] = handler;
                 return std::string("http://") + _config->get("HOSTNAME", "localhost") + ":" + _http_port + "/" + topic;
             }
-            virtual std::function<std::string(std::string const &)> do_bind(std::string const &url) 
+            virtual std::function<std::string(std::string const &, FMF::Context &)> do_bind(std::string const &url) 
             {
-                return [url,this](std::string const &payload) {
+                return [url,this](std::string const &payload, FMF::Context &ctx) {
                     struct mg_mgr mgr;
                     
                       mg_mgr_init(&mgr, this);
                       _done_polling = false;
                       _polling_result = std::string();
-                      mg_connect_http(&mgr, client_ev_handler, url.c_str(), NULL, payload.empty() ? NULL : payload.c_str());
+                      char const *post_data = payload.empty() ? NULL : payload.c_str();
+                      auto hdrs = ctx["ExtraHeaders"];
+                      char const *extra_headers = hdrs.empty() ? NULL : hdrs.c_str();
+                      mg_connect_http(&mgr, client_ev_handler, url.c_str(), extra_headers, post_data);
                       while (!_done_polling) {
                         mg_mgr_poll(&mgr, 1000);
                       }

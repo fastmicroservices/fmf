@@ -52,8 +52,8 @@ namespace FMF {
                 _handlers[slug] = handler;
                 return slug;
             }
-            virtual std::function<std::string(std::string const &)> do_bind(std::string const &registration) {
-                return [this, registration](std::string const &payload) {
+            virtual std::function<std::string(std::string const &, FMF::Context &)> do_bind(std::string const &registration) {
+                return [this, registration](std::string const &payload, FMF::Context &) {
                     Context tmp;
                     return _handlers[registration](payload, tmp);
                 };

@@ -11,6 +11,9 @@ namespace FMF {
             auto value = do_get(key);
             return value.empty() ? default_value : value;
         }
+        std::string operator[](std::string const &key) {
+            return get(key);
+        }
         void set(std::string const &key, std::string const &value) {
             return do_set(key,value);
         }

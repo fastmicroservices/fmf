@@ -27,7 +27,7 @@ namespace FMF {
                 _discovery->publish(topic, version_major, version_minor, addr, std::string());
                 return addr;
             }
-            virtual std::function<std::string(std::string const &)> do_bind(std::string const &url) 
+            virtual std::function<std::string(std::string const &, FMF::Context &)> do_bind(std::string const &url) 
             {
                 throw "Not to be used as a binding endpoint";
             }

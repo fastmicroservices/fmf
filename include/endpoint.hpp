@@ -12,12 +12,19 @@ namespace FMF {
         Endpoint(std::unique_ptr<Configuration> &config): _config(config) {}
         virtual ~Endpoint() = default;
         std::function<std::string(std::string const &)> bind(std::string const &registration) {
+            auto target = do_bind(registration);
+            return [target](std::string const &payload) {
+                Context ctx;
+                return target(payload, ctx);
+            };
+        }
+        std::function<std::string(std::string const &, Context &)> bind_with_context(std::string const &registration) {
             return do_bind(registration);
         }
     protected:
         std::unique_ptr<Configuration> &_config;
     private:
-        virtual std::function<std::string(std::string const &)> do_bind(std::string const &registration) = 0;
+        virtual std::function<std::string(std::string const &, Context &)> do_bind(std::string const &registration) = 0;
     };
 
     class BindingEndpoint: public Endpoint {
