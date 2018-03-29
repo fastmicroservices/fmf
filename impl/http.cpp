@@ -55,7 +55,7 @@ namespace FMF {
                       mg_mgr_init(&mgr, this);
                       _done_polling = false;
                       _polling_result = std::string();
-                      mg_connect_http(&mgr, client_ev_handler, url.c_str(), NULL, payload.c_str());
+                      mg_connect_http(&mgr, client_ev_handler, url.c_str(), NULL, payload.empty() ? NULL : payload.c_str());
                       while (!_done_polling) {
                         mg_mgr_poll(&mgr, 1000);
                       }
