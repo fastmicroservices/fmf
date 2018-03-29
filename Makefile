@@ -18,7 +18,9 @@ example1: example1.o lib/libfmf.so
 	clang++ example1.o -L./lib -lfmf -o example1
 
 lib/libfmf.so: environment.o inmem.o multiple.o mongoose.o http.o eureka.o registeringendpoint.o
-	clang++ -fPIC -shared environment.o inmem.o multiple.o http.o mongoose.o eureka.o registeringendpoint.o -lz -o lib/libfmf.so
+	mkdir -p out
+	printf "#include \"include/config.hpp\"\nchar const *FMF::Version::__fmf_commit_slug = \"`git show-ref | head -n1 | cut -d" " -f1`\";\n" | clang++ -xc++ - -c -o out/ver.o $(CXXFLAGS)
+	clang++ -fPIC -shared environment.o inmem.o multiple.o http.o mongoose.o eureka.o registeringendpoint.o out/ver.o -lz -o lib/libfmf.so
 
 example1.o: example1.cpp include/config.hpp
 	clang++ -c example1.cpp $(CXXFLAGS)

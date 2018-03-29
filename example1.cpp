@@ -21,6 +21,7 @@ public:
 
 int main(int argc, char **argv) {
     try {
+        std::cout << "HELLO FOR SLUG " << FMF::Version::slug() << std::endl;
         options opts(argc,argv);
         std::cout << "SAMPLING CONFIGURATION" << std::endl;
         auto envconf = FMF::ConfigurationFactory::create("env");

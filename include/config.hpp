@@ -5,6 +5,13 @@
 #include <functional>
 
 namespace FMF {
+    class Version {
+        static char const *__fmf_commit_slug;
+    public:
+        static std::string slug() {
+            return __fmf_commit_slug;
+        }
+    };
     class Configuration {
     public:
         virtual ~Configuration() = default;
