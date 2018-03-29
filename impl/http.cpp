@@ -83,7 +83,7 @@ namespace FMF {
                     mg_parse_uri(httpm->uri, NULL, NULL, NULL, NULL, &path, NULL, NULL);
                     std::string local_path(path.p, path.len);
                     std::string query_text(httpm->query_string.p, httpm->query_string.len);
-                    if (local_path.size() > 1 && local_path[0] == '/') {
+                    if (local_path.size() > 0 && local_path[0] == '/') {
                         auto topic = local_path.substr(1);
                         auto pos = _handlers.find(topic);
                         if (pos == _handlers.end()) {
