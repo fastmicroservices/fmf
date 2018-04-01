@@ -62,14 +62,21 @@ int main(int argc, char **argv) {
             auto http = FMF::BindingEndpointFactory::create("http", multiconf);
             std::cout << __FILE__ << ":" << __LINE__ << std::endl;
             auto registration = http->handle_topic("test", 1, 0, testFn);
+            std::cout << __FILE__ << ":" << __LINE__ << std::endl;
 
-            multiconf->set_if_not_present("EUREKA_HOST", "192.168.56.101");
-            multiconf->set_if_not_present("EUREKA_PORT", "8080");
-            auto discovery_svc = FMF::DiscoveryFactory::create("eureka", multiconf);
-            auto discovery_registration = discovery_svc->publish("test", 1, 0, registration, std::string());
-            std::cout << __FILE__ << ":" << __LINE__ << std::endl;
-            std::cout << "Discovery_registration value " << discovery_registration << std::endl;
-            std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+            if (opts.is_present("eureka")) {
+                multiconf->set_if_not_present("EUREKA_HOST", "192.168.56.101");
+                std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+                multiconf->set_if_not_present("EUREKA_PORT", "8080");
+                std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+                auto discovery_svc = FMF::DiscoveryFactory::create("eureka", multiconf);
+                std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+                auto discovery_registration = discovery_svc->publish("test", 1, 0, registration, std::string());
+                std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+                std::cout << "Discovery_registration value " << discovery_registration << std::endl;
+                std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+            }
+            std::cout << "Now listening!" << std::endl;
             while (http->listen()) { ; }
             std::cout << __FILE__ << ":" << __LINE__ << std::endl;
         }
