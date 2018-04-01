@@ -7,23 +7,20 @@ extern "C" {
 #include "../include/mongoose.h"
 }
 #include <context.hpp>
+#include <iostream>
 
 namespace FMF {
     namespace impl {
         class HttpEndpoint: public BindingEndpoint {
         public:
             HttpEndpoint(std::unique_ptr<Configuration> &config): BindingEndpoint(config) {
-#ifdef  MG_ENABLE_SSL
                 auto is_ssl = _config->get("IS_SSL", "no");
-                _is_ssl = is_ssl == "no";
+                _is_ssl = is_ssl != "no";
                 _http_port = _config->get("PORT", _is_ssl ? "443" : "80");
                 if (_is_ssl) {
                     _ssl_cert = _config->get("SSL_CERT", "server.pem");
                     _ssl_key = _config->get("SSL_KEY", "server.key");
                 }
-#else // ifdef  MG_ENABLE_SSL
-                _http_port = _config->get("PORT", "80");
-#endif //def  MG_ENABLE_SSL
             }
             virtual ~HttpEndpoint() 
             {
@@ -69,7 +66,6 @@ namespace FMF {
             }
 
             std::map<std::string,std::function<std::string(std::string const &, Context &)>> _handlers;
-            struct mg_serve_http_opts _http_server_opts = {};
             bool _started {false};
             struct mg_mgr _mgr;
 
@@ -130,11 +126,9 @@ namespace FMF {
             bool _done_polling;
             std::string _polling_result;
             std::string _http_port;
-#ifdef  MG_ENABLE_SSL
             std::string _ssl_cert;
             std::string _ssl_key;
-            bool _is_ssl;
-#endif //def  MG_ENABLE_SSL
+            bool _is_ssl = {};
 
             void client_handler(struct mg_connection *nc, int ev, void *ev_data) 
             {
@@ -153,15 +147,24 @@ namespace FMF {
             {
                 struct mg_connection *nc;
                 mg_mgr_init(&_mgr, this);
-                nc = mg_bind(&_mgr, _http_port.c_str(), &ev_handler);
+                if (_is_ssl) {
+                    std::cout << "going SSL" << std::endl;
+                    struct mg_bind_opts bind_opts;
+                    memset(&bind_opts, 0, sizeof(bind_opts));
+                    bind_opts.ssl_cert = _ssl_cert.c_str(); // "server.pem";
+                    bind_opts.ssl_key = _ssl_key.c_str(); // "key.pem";
+
+                    // Use bind_opts to specify SSL certificate & key file
+                    nc = mg_bind_opt(&_mgr, _http_port.c_str(), &ev_handler, bind_opts);
+                }
+                else {
+                    nc = mg_bind(&_mgr, _http_port.c_str(), &ev_handler);
+                }
                 if (nc == NULL)
                 {
                     throw "Failed to create listener";
                 }
-                // Set up HTTP server parameters
                 mg_set_protocol_http_websocket(nc);
-                _http_server_opts.document_root = "www";
-                _http_server_opts.enable_directory_listing = "yes";
 
                 
                 _started = true;
