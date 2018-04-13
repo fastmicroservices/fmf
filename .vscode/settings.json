@@ -26,7 +26,8 @@
         "utility": "cpp",
         "bitset": "cpp",
         "array": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "__tuple": "cpp"
     },
     "files.exclude": {
         "**/.git": true,

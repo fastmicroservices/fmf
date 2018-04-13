@@ -56,6 +56,13 @@ namespace FMF {
                       auto hdrs = ctx["ExtraHeaders"];
                       char const *extra_headers = hdrs.empty() ? NULL : hdrs.c_str();
                       mg_connect_http(&mgr, client_ev_handler, url.c_str(), extra_headers, post_data);
+                    //   mg_set_ssl(conn, NULL, NULL);
+                    //     const char *error;
+                    //     struct mg_connect_opts opts;
+                    //     memset(&opts, 0, sizeof(opts));
+                    //     opts.error_string = &error;
+                    //     opts.ssl_ca_cert = "*";
+                    //   mg_connect_http_opt(&mgr, client_ev_handler, opts, url.c_str(), extra_headers, post_data);
                       while (!_done_polling) {
                         mg_mgr_poll(&mgr, 1000);
                       }
@@ -132,7 +139,12 @@ namespace FMF {
 
             void client_handler(struct mg_connection *nc, int ev, void *ev_data) 
             {
-                if (ev == MG_EV_HTTP_REPLY) {
+                if (ev == MG_EV_CONNECT){
+                    if (*(int *) ev_data != 0) {
+                        fprintf(stderr, "connect() failed: %s\n", strerror(*(int *) ev_data));
+                    }
+                }
+                else if (ev == MG_EV_HTTP_REPLY) {
                     auto hm = static_cast<struct http_message *>(ev_data);
                     nc->flags |= MG_F_CLOSE_IMMEDIATELY;
                     _polling_result += std::string(hm->body.p, hm->body.len);

@@ -19,10 +19,44 @@ public:
     }
 };
 
+void test_https_post() {
+    std::cout << "NOW TESTING HTTPS POST" << std::endl << std::endl;
+    auto url = std::string("https://postman-echo.com/post");
+    auto multiconf = FMF::ConfigurationFactory::create("inmem");
+    auto http_azure = FMF::BindingEndpointFactory::create("http", multiconf)->bind_with_context(url);
+    FMF::Context client_context;
+    client_context.set("ExtraHeaders", "Content-Type: application/x-www-form-urlencoded\r\n");
+    auto data = std::string("test=1&test2=2");
+    auto json_result = http_azure(data, client_context);
+    std::cout << "the response has " << json_result.size() << " bytes" << std::endl;
+    std::cout << json_result << std::endl;
+}
+
+void test_https_get() {
+    std::cout << "NOW TESTING HTTPS GET" << std::endl << std::endl;
+    // auto url = std::string("https://httpbin.org/get");
+    // auto url = "https://raw.githubusercontent.com/fastmicroservices/fmf/master/tests/reg.json";
+    auto url = "https://postman-echo.com/get?foo1=bar1&foo2=bar2";
+    
+
+    auto multiconf = FMF::ConfigurationFactory::create("inmem");
+    auto http_azure = FMF::BindingEndpointFactory::create("http", multiconf)->bind(url);
+    auto json_result = http_azure(std::string());
+    std::cout << "the response has " << json_result.size() << " bytes" << std::endl;
+    std::cout << json_result << std::endl;
+}
+
 int main(int argc, char **argv) {
     try {
         std::cout << "HELLO FOR SLUG " << FMF::Version::slug() << std::endl;
         options opts(argc,argv);
+
+        if (opts.is_present("https-cli")) {
+            test_https_get();
+            test_https_post();
+            return 0;
+        }
+
         std::cout << "SAMPLING CONFIGURATION" << std::endl;
         auto envconf = FMF::ConfigurationFactory::create("env");
         std::cout << "The value of PATH on envconf is " << envconf->get("PATH") << std::endl << std::flush;
@@ -88,3 +122,4 @@ int main(int argc, char **argv) {
         return -1;
     }
 }
+

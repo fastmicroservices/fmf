@@ -1,0 +1,9 @@
+export SSH_OPTS="-o StrictHostKeyChecking=no"
+
+make clean
+tar --exclude='./lib' --exclude='./.git' -zcvf ../src.tar.gz .
+ssh $SSH_OPTS root@$SERVER "apt-get update && apt-get install build-essential zlib1g-dev llvm clang-3.8 git openssl libssl-dev -y && ln -s /usr/bin/clang-3.8 /usr/bin/clang && ln -s /usr/bin/clang++-3.8 /usr/bin/clang++"
+scp $SSH_OPTS ../src.tar.gz root@$SERVER:/root/src.tar.gz
+ssh $SSH_OPTS root@$SERVER "cd /root && mkdir src && cd src && mv /root/src.tar.gz . && tar xfz src.tar.gz && make"
+scp $SSH_OPTS root@$SERVER:/root/src/lib/libfmf.so lib/debian_x64_libfmf.so
+rm ../src.tar.gz

@@ -1,0 +1,2 @@
+export SSH_OPTS="-o StrictHostKeyChecking=no"
+ssh $SSH_OPTS root@$SERVER "apt-get update && apt-get install build-essential zlib1g-dev llvm clang-3.8 git openssl libssl-dev -y && ln -s /usr/bin/clang-3.8 /usr/bin/clang && ln -s /usr/bin/clang++-3.8 /usr/bin/clang++"

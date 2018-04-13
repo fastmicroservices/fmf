@@ -38,8 +38,14 @@ multiple.o: impl/multiple.cpp include/config.hpp
 http.o: impl/http.cpp include/config.hpp include/endpoint.hpp include/mongoose.h
 	clang++ -c impl/http.cpp $(CXXFLAGS)
 
-mongoose.o: mongoose/mongoose.c
-	clang -c mongoose/mongoose.c $(CFLAGS)
+mongoose/mongoose.c:
+	curl https://raw.githubusercontent.com/cesanta/mongoose/master/mongoose.c > mongoose/mongoose.c
+
+include/mongoose.h:
+	curl https://raw.githubusercontent.com/cesanta/mongoose/master/mongoose.h > include/mongoose.h
+
+mongoose.o: mongoose/mongoose.c include/mongoose.h
+	clang -c mongoose/mongoose.c $(CFLAGS) -DCS_ENABLE_DEBUG
 
 eureka.o: impl/eureka.cpp include/discovery.hpp
 	clang++ -c impl/eureka.cpp $(CXXFLAGS)
