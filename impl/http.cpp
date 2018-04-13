@@ -56,13 +56,6 @@ namespace FMF {
                       auto hdrs = ctx["ExtraHeaders"];
                       char const *extra_headers = hdrs.empty() ? NULL : hdrs.c_str();
                       mg_connect_http(&mgr, client_ev_handler, url.c_str(), extra_headers, post_data);
-                    //   mg_set_ssl(conn, NULL, NULL);
-                    //     const char *error;
-                    //     struct mg_connect_opts opts;
-                    //     memset(&opts, 0, sizeof(opts));
-                    //     opts.error_string = &error;
-                    //     opts.ssl_ca_cert = "*";
-                    //   mg_connect_http_opt(&mgr, client_ev_handler, opts, url.c_str(), extra_headers, post_data);
                       while (!_done_polling) {
                         mg_mgr_poll(&mgr, 1000);
                       }
