@@ -7,7 +7,7 @@ namespace FMF {
         public:
             RegisteringEndpoint(std::string const &endpoint_name, std::string const &discovery_name, std::unique_ptr<Configuration> &config):
             BindingEndpoint(config) {
-                _endpoint = BindingEndpointFactory::create(endpoint_name, config);
+                _endpoint = RegisteringFactory<BindingEndpoint>::create(endpoint_name, config);
                 _discovery = DiscoveryFactory::create(discovery_name, config);
             }
             virtual bool listen() 
@@ -34,11 +34,11 @@ namespace FMF {
 
         };
 
-        class RegisteringEndpointFactory : public BindingEndpointFactory {
+        class RegisteringEndpointFactory : public RegisteringFactory<BindingEndpoint> {
         public:
             static void enable() {
                 auto endp = std::make_unique<RegisteringEndpointFactory>();
-                BindingEndpointFactory::add(std::move(endp));
+                RegisteringFactory<BindingEndpoint>::add(std::move(endp));
             }
         private:
             virtual std::unique_ptr<BindingEndpoint> do_create(std::string const &name, std::unique_ptr<Configuration> &config) {
