@@ -8,7 +8,7 @@ export DROPLET_IP=`doctl compute droplet get $DROPLET_ID --format PublicIPv4 | t
 make clean
 tar --exclude='./lib' --exclude='./.git' -zcvf ../src.tar.gz .
 
-sleep 10
+sleep 20
 
 # step 2: setup an environment for building
 ssh $SSH_OPTS root@$DROPLET_IP "apt-get update && apt-get install build-essential zlib1g-dev llvm clang-3.8 git openssl libcurl4-openssl-dev libssl-dev -y && ln -s /usr/bin/clang-3.8 /usr/bin/clang && ln -s /usr/bin/clang++-3.8 /usr/bin/clang++"
