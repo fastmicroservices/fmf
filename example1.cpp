@@ -23,7 +23,7 @@ void test_https_post() {
     std::cout << "NOW TESTING HTTPS POST" << std::endl << std::endl;
     auto url = std::string("https://postman-echo.com/post");
     auto multiconf = FMF::ConfigurationFactory::create("inmem");
-    auto http_azure = FMF::BindingEndpointFactory::create("http", multiconf)->bind_with_context(url);
+    auto http_azure = FMF::RegisteringFactory<FMF::Endpoint>::create("curl", multiconf)->bind_with_context(url);
     FMF::Context client_context;
     client_context.set("ExtraHeaders", "Content-Type: application/x-www-form-urlencoded\r\n");
     auto data = std::string("test=1&test2=2");
@@ -37,10 +37,12 @@ void test_https_get() {
     // auto url = std::string("https://httpbin.org/get");
     // auto url = "https://raw.githubusercontent.com/fastmicroservices/fmf/master/tests/reg.json";
     auto url = "https://postman-echo.com/get?foo1=bar1&foo2=bar2";
-    
 
     auto multiconf = FMF::ConfigurationFactory::create("inmem");
-    auto http_azure = FMF::BindingEndpointFactory::create("http", multiconf)->bind(url);
+    //auto http_azure = FMF::BindingEndpointFactory::create("http", multiconf)->bind(url);
+    auto endp = FMF::RegisteringFactory<FMF::Endpoint>::create("curl", multiconf);
+    auto http_azure = endp->bind(url);
+
     auto json_result = http_azure(std::string());
     std::cout << "the response has " << json_result.size() << " bytes" << std::endl;
     std::cout << json_result << std::endl;
@@ -71,7 +73,7 @@ int main(int argc, char **argv) {
         std::cout << "The value of TEST1 on multiconf is " << multiconf->get("TEST1") << std::endl << std::flush;
         
         std::cout << "SAMPLING ENDPOINTS" << std::endl;
-        auto endp = FMF::BindingEndpointFactory::create("inmem", multiconf);
+        auto endp = FMF::RegisteringFactory<FMF::BindingEndpoint>::create("inmem", multiconf);
         std::cout << "We have endp: " << static_cast<bool>(endp) << std::endl;
         auto testFn = [](std::string const &src, FMF::Context &) {
             std::cout << "TEST has been called with " << src << std::endl;
@@ -84,7 +86,7 @@ int main(int argc, char **argv) {
 
         if (opts.is_present("client")) {
             std::cout << "Binding to http://localhost:8080/test" << std::endl;
-            auto http = FMF::BindingEndpointFactory::create("http", multiconf);
+            auto http = FMF::RegisteringFactory<FMF::BindingEndpoint>::create("http", multiconf);
             auto fn = http->bind("http://localhost:8080/test");
             std::cout << "Calling now" << std::endl;
             auto result = fn("PING");
@@ -92,27 +94,18 @@ int main(int argc, char **argv) {
         }
         else {
             multiconf->set("PORT", "8081");
-            std::cout << __FILE__ << ":" << __LINE__ << std::endl;
-            auto http = FMF::BindingEndpointFactory::create("http", multiconf);
-            std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+            auto http = FMF::RegisteringFactory<FMF::BindingEndpoint>::create("http", multiconf);
             auto registration = http->handle_topic("test", 1, 0, testFn);
-            std::cout << __FILE__ << ":" << __LINE__ << std::endl;
 
             if (opts.is_present("eureka")) {
                 multiconf->set_if_not_present("EUREKA_HOST", "192.168.56.101");
-                std::cout << __FILE__ << ":" << __LINE__ << std::endl;
                 multiconf->set_if_not_present("EUREKA_PORT", "8080");
-                std::cout << __FILE__ << ":" << __LINE__ << std::endl;
                 auto discovery_svc = FMF::DiscoveryFactory::create("eureka", multiconf);
-                std::cout << __FILE__ << ":" << __LINE__ << std::endl;
                 auto discovery_registration = discovery_svc->publish("test", 1, 0, registration, std::string());
-                std::cout << __FILE__ << ":" << __LINE__ << std::endl;
                 std::cout << "Discovery_registration value " << discovery_registration << std::endl;
-                std::cout << __FILE__ << ":" << __LINE__ << std::endl;
             }
             std::cout << "Now listening!" << std::endl;
             while (http->listen()) { ; }
-            std::cout << __FILE__ << ":" << __LINE__ << std::endl;
         }
         
         return 0;

@@ -49,44 +49,52 @@ namespace FMF {
         virtual std::string do_handle_topic(std::string const &topic, int version_major, int version_minor, std::function<std::string(std::string const &, Context &)> handler) = 0;
     };
 
-    class BindingEndpointFactory {
+    template<typename T>
+    class RegisteringFactory {
     public:
-        static std::unique_ptr<BindingEndpoint> create(std::string const &name, std::unique_ptr<Configuration> &config) {
+        static std::unique_ptr<T> create(std::string const &name, std::unique_ptr<Configuration> &config) {
             for(auto &factory: get_factories()) {
                 auto endp = factory->do_create(name, config);
                 if (endp) {
                     return endp;
                 }
             }
-            return std::unique_ptr<BindingEndpoint>();
+            return std::unique_ptr<T>();
         }
     protected:
-        static void add(std::unique_ptr<BindingEndpointFactory> &&factory) {
+        static void add(std::unique_ptr<RegisteringFactory<T>> &&factory) {
             auto &factories = get_factories();
             factories.push_back(std::move(factory));
         }
     private:
-        virtual std::unique_ptr<BindingEndpoint> do_create(std::string const &name, std::unique_ptr<Configuration> &config) = 0;
-        static std::list<std::unique_ptr<BindingEndpointFactory>> &get_factories() {
-            static std::list<std::unique_ptr<BindingEndpointFactory>> factories;
+        virtual std::unique_ptr<T> do_create(std::string const &name, std::unique_ptr<Configuration> &config) = 0;
+        static std::list<std::unique_ptr<RegisteringFactory<T>>> &get_factories() {
+            static std::list<std::unique_ptr<RegisteringFactory<T>>> factories;
             return factories;
         }
     };
 
-    template<typename T>
-    class TEndpointFactory : public BindingEndpointFactory {
+    // typedef RegisteringFactory<BindingEndpoint> BindingEndpointFactory;
+    // typedef RegisteringFactory<Endpoint> EndpointFactory;
+
+    template<typename B, typename C>
+    class TRegisteringFactory : public RegisteringFactory<B> {
     public:
         static void enable() {
-            auto endp = std::make_unique<TEndpointFactory<T>>();
-            BindingEndpointFactory::add(std::move(endp));
+            std::cerr << "enabling " << C::_construction_id << std::endl;
+            auto endp = std::make_unique<TRegisteringFactory<B,C> >();
+            RegisteringFactory<B>::add(std::move(endp));
         }
     private:
-        virtual std::unique_ptr<BindingEndpoint> do_create(std::string const &name, std::unique_ptr<Configuration> &config) {
-            if (name == T::_construction_id) {
-                return std::make_unique<T>(config);
+        virtual std::unique_ptr<B> do_create(std::string const &name, std::unique_ptr<Configuration> &config) {
+            if (name == C::_construction_id) {
+                return std::make_unique<C>(config);
             }
-            return std::unique_ptr<BindingEndpoint>();
+            return std::unique_ptr<B>();
         }
     };
+
+    template<typename T>
+    class TEndpointFactory : public TRegisteringFactory<BindingEndpoint,T> {};
 
 }

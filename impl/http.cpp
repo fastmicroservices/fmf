@@ -180,7 +180,7 @@ namespace FMF {
         public:
             EnableHttp() 
             {
-                TEndpointFactory<HttpEndpoint>::enable();
+                TRegisteringFactory<BindingEndpoint,HttpEndpoint>::enable();
             }
         };
         static EnableHttp enable_http;

@@ -3,6 +3,7 @@
 #include <list>
 #include <memory>
 #include <functional>
+#include <iostream>
 
 namespace FMF {
     class Version {
