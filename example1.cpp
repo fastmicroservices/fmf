@@ -25,7 +25,7 @@ void test_https_post() {
     auto multiconf = FMF::ConfigurationFactory::create("inmem");
     auto http_azure = FMF::RegisteringFactory<FMF::Endpoint>::create("curl", multiconf)->bind_with_context(url);
     FMF::Context client_context;
-    client_context.set("ExtraHeaders", "Content-Type: application/x-www-form-urlencoded\r\n");
+    client_context.set("ExtraHeaders", "Content-Type: application/x-www-form-urlencoded\r\nX-Test: this should be seen\r\n");
     auto data = std::string("test=1&test2=2");
     auto json_result = http_azure(data, client_context);
     std::cout << "the response has " << json_result.size() << " bytes" << std::endl;

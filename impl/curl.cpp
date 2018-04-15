@@ -1,4 +1,5 @@
 #include <memory>
+#include <sstream>
 #include <config.hpp>
 #include <context.hpp>
 #include <endpoint.hpp>
@@ -35,6 +36,26 @@ namespace FMF {
                             curl_easy_setopt(curl, CURLOPT_POST, 1);
                             curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
                             curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, data.size());
+                        }
+
+                        // additional headers?
+                        auto extra_headers = ctx.get("ExtraHeaders");
+                        if (!extra_headers.empty()) {
+                            struct curl_slist *list = NULL;
+                            std::stringstream hdrs_stream(extra_headers);
+                            std::string buff;
+                            while (hdrs_stream.good()) {
+                                std::getline(hdrs_stream, buff);
+                                if (!buff.empty()) {
+                                    if (buff[buff.size()-1] == '\r') {
+                                        buff.resize(buff.size() - 1);
+                                    }
+                                    if (!buff.empty()) {
+                                        list = curl_slist_append(list, buff.c_str());
+                                    }
+                                }
+                            }
+                            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
                         }
 
                         res = curl_easy_perform(curl);
