@@ -2,13 +2,14 @@ export SSH_OPTS="-o StrictHostKeyChecking=no"
 
 # step 1: create the droplet
 doctl compute droplet create FwkCompileDroplet --image debian-9-x64 --region sgp1 --size 512mb --ssh-keys d7:86:c9:5a:d7:a3:92:55:44:bc:4d:cb:10:51:1c:f8 --format ID > result.txt
-export DROPLET_ID=`tail -1 result.txt`
-export DROPLET_IP=`doctl compute droplet get $DROPLET_ID --format PublicIPv4 | tail -1`
 
 make clean
 tar --exclude='./lib' --exclude='./.git' -zcvf ../src.tar.gz .
 
-sleep 20
+sleep 40
+export DROPLET_ID=`tail -1 result.txt`
+export DROPLET_IP=`doctl compute droplet get $DROPLET_ID --format PublicIPv4 | tail -1`
+echo Connecting to $DROPLET_IP
 
 # step 2: setup an environment for building
 ssh $SSH_OPTS root@$DROPLET_IP "apt-get update && apt-get install build-essential zlib1g-dev llvm clang-3.8 git openssl libcurl4-openssl-dev libssl-dev -y && ln -s /usr/bin/clang-3.8 /usr/bin/clang && ln -s /usr/bin/clang++-3.8 /usr/bin/clang++"
