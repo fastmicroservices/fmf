@@ -17,6 +17,9 @@ namespace FMF {
         void set(std::string const &key, std::string const &value) {
             return do_set(key,value);
         }
+        operator const std::map<std::string,std::string>&() {
+            return _values;
+        }
 
     private:
         std::map<std::string,std::string> _values;

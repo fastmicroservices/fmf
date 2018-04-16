@@ -75,8 +75,13 @@ int main(int argc, char **argv) {
         std::cout << "SAMPLING ENDPOINTS" << std::endl;
         auto endp = FMF::RegisteringFactory<FMF::BindingEndpoint>::create("inmem", multiconf);
         std::cout << "We have endp: " << static_cast<bool>(endp) << std::endl;
-        auto testFn = [](std::string const &src, FMF::Context &) {
+        auto testFn = [](std::string const &src, FMF::Context &ctx) {
             std::cout << "TEST has been called with " << src << std::endl;
+            std::cout << "and the CONTEXT contains" << std::endl;
+            for(auto &kv: (const std::map<std::string,std::string>&)ctx) {
+                std::cout << kv.first << ": " << kv.second << std::endl;
+            }
+            std::cout << std::endl;
             return "PONG";
         };
         auto slug = endp->handle_topic("test", 1, 0, testFn);
@@ -93,7 +98,7 @@ int main(int argc, char **argv) {
             std::cout << "The result is: " << result << std::endl;
         }
         else {
-            multiconf->set("PORT", "8081");
+            multiconf->set("PORT", "8080");
             auto http = FMF::RegisteringFactory<FMF::BindingEndpoint>::create("http", multiconf);
             auto registration = http->handle_topic("test", 1, 0, testFn);
 

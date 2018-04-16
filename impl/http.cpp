@@ -99,6 +99,16 @@ namespace FMF {
                             ctx.set("LocalPath", local_path);
                             ctx.set("QueryString", query_text);
                             ctx.set("Uri", std::string(httpm->uri.p, httpm->uri.len));
+                            for (auto i = 0; httpm->header_names[i].len > 0; i++) {
+                                std::string tag("HEADER_");
+                                std::transform(
+                                    httpm->header_names[i].p, 
+                                    httpm->header_names[i].p + httpm->header_names[i].len,
+                                    std::back_inserter(tag),
+                                    [](unsigned char c){ return std::toupper(c); });
+                                ctx.set(tag,
+                                    std::string(httpm->header_values[i].p, httpm->header_values[i].len));
+                            }
                             auto result = pos->second(std::string(httpm->body.p, httpm->body.len), ctx);
                             auto serve_file = ctx.get("Serve-File");
                             auto mime_type = ctx.get("Content-Type", "text/plain");
