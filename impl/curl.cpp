@@ -29,6 +29,10 @@ namespace FMF {
                         // don't verify name
                         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
+                        if (ctx.get("FollowRedirects", "yes") == "yes") {
+                            curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+                        }
+
                         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_to_string);
                         curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&result);
 
