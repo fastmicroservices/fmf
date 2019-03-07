@@ -55,6 +55,7 @@ namespace FMF {
             }
             return std::unique_ptr<Configuration>();
         }
+        virtual ~ConfigurationFactory() = default;
     protected:
         static void add(std::unique_ptr<ConfigurationFactory> &&factory) {
             auto &factories = get_factories();

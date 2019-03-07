@@ -173,7 +173,7 @@ void service_main()
 {
     std::cout << "OK working as a service" << std::endl;
     auto config = FMF::ConfigurationFactory::create("env,inmem");
-    auto endpoint = FMF::BindingEndpointFactory::create("http", config);
+    auto endpoint = FMF::RegisteringFactory<FMF::BindingEndpoint>::create("http", config);
     
     endpoint->handle_topic("graph", 0, 1, [](std::string const &payload, FMF::Context &ctx) {
         ctx.set("Content-Type", "image/svg+xml");

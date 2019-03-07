@@ -34,6 +34,7 @@ namespace FMF {
             }
             return std::unique_ptr<Discovery>();
         }
+        virtual ~DiscoveryFactory() = default;
     protected:
         static void add(std::unique_ptr<DiscoveryFactory> &&factory) {
             auto &factories = get_factories();

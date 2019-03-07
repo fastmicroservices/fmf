@@ -10,4 +10,5 @@ dashboard: bin/dashboard.o ../lib/libfmf.so
 	clang++ bin/dashboard.o -L../lib -lfmf -lz -o dashboard
 
 bin/dashboard.o: dashboard.cpp ../include/config.hpp
+	mkdir -p bin
 	clang++ -c dashboard.cpp $(CXXFLAGS) -o bin/dashboard.o

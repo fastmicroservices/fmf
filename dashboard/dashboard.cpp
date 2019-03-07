@@ -24,7 +24,7 @@ int main()
         return discovery_svc->find("*",0,0);
     };
 
-    auto http = FMF::BindingEndpointFactory::create("http", multiconf);
+    auto http = FMF::RegisteringFactory<FMF::BindingEndpoint>::create("http", multiconf);
     http->handle_topic("dashboard", 1, 0, dashboard);
     http->handle_topic("test_discovery", 1, 0, test_discovery);
     while (http->listen()) { ; }

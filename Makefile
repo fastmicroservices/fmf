@@ -53,8 +53,12 @@ include/mongoose.h:
 mongoose.o: mongoose/mongoose.c include/mongoose.h
 	clang -c mongoose/mongoose.c $(CFLAGS)
 
-eureka.o: impl/eureka.cpp include/discovery.hpp
+eureka.o: impl/eureka.cpp include/discovery.hpp impl/parsehttp.hpp external/zstr/src/zstr.hpp
 	clang++ -c impl/eureka.cpp $(CXXFLAGS)
+
+impl/parsehttp.hpp external/zstr/src/zstr.hpp:
+	git submodule init
+	git submodule update
 
 registeringendpoint.o: impl/registeringendpoint.cpp
 	clang++ -c impl/registeringendpoint.cpp $(CXXFLAGS)
