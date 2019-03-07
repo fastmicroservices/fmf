@@ -61,6 +61,7 @@ namespace FMF {
             }
             return std::unique_ptr<T>();
         }
+        virtual ~RegisteringFactory() = default;
     protected:
         static void add(std::unique_ptr<RegisteringFactory<T>> &&factory) {
             auto &factories = get_factories();
@@ -85,6 +86,7 @@ namespace FMF {
             auto endp = std::make_unique<TRegisteringFactory<B,C> >();
             RegisteringFactory<B>::add(std::move(endp));
         }
+        virtual ~TRegisteringFactory<B,C>() = default;
     private:
         virtual std::unique_ptr<B> do_create(std::string const &name, std::unique_ptr<Configuration> &config) {
             if (name == C::_construction_id) {
