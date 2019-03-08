@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 DEBUG_FLAGS = -DCS_ENABLE_DEBUG
 CXXFLAGS = -std=c++14 -Iinclude -Iexternal/zstr/src -Wall -fPIC -DMG_ENABLE_SSL
 CFLAGS = -std=c11 -Iinclude -Wall -fPIC -DMG_ENABLE_SSL -I/usr/local/opt/openssl/include
