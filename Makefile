@@ -10,7 +10,10 @@ all: example1 dashboard/dashboard graph/graph
 dashboard/dashboard: dashboard/dashboard.cpp
 	pushd dashboard && make && popd
 
-graph/graph: graph/graph.cpp
+external/plustache/libplustache.la:
+	./install-plustache.sh
+
+graph/graph: graph/graph.cpp external/plustache/libplustache.la
 	pushd graph && make && popd
 
 clean:
